@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 {
+
     package MyDate;
     use Carp;
 
@@ -34,11 +35,13 @@ use warnings;
     }
 }
 
-MyDate->import;
+MyDate->import;    # we don't use it
 my $date = MyDate->new;
 
 print "The date is " . $date->date . "\n";
 print "The month is " . $date->month . "\n";
 print "The year is " . $date->year . "\n";
 
-$date->debug("bla", "ble", 123);
+# Perl searches through all of @ISA and UNIVERSAL before it starts to looking
+# into any AUTOLOAD method.
+$date->debug( "bla", "ble", 123 );

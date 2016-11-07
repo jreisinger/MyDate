@@ -1,0 +1,44 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+{
+    package MyDate;
+    use Carp;
+
+    my %Allowed_methods = qw( date 3 month 4 year 5 );
+    my @Offsets         = qw( 0 0 0 0 1 1900 0 0 0 );
+
+    sub new { bless {}, $_[0] }
+    sub DESTROY { }
+
+    sub AUTOLOAD {
+        our $AUTOLOAD;
+        my $method = $AUTOLOAD;
+        $method =~ s/.*:://;
+
+        unless ( exists $Allowed_methods{$method} ) {
+            carp "Uknown method: $AUTOLOAD";
+            return;
+        }
+
+        my $slice_index = $Allowed_methods{$method};
+        return (localtime)[$slice_index] + $Offsets[$slice_index];
+    }
+
+    sub UNIVERSAL::debug {
+        shift;
+        my $when = localtime;
+        my $message = join ' | ', @_;
+        print "[$when] $message\n";
+    }
+}
+
+MyDate->import;
+my $date = MyDate->new;
+
+print "The date is " . $date->date . "\n";
+print "The month is " . $date->month . "\n";
+print "The year is " . $date->year . "\n";
+
+$date->debug("bla", "ble", 123);
